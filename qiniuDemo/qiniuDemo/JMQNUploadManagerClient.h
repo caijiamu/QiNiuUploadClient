@@ -52,10 +52,11 @@ typedef void(^singleProgressHander)(CGFloat percent,NSInteger i);
  *  @param imageArr    图片数组源
  *  @param token       token
  *  @param qiniuPrefix 七牛前缀
- *  @param progress    进度值
+ *  @param progress    进度值(单张)
+ *  @param allImageProgress  所有图片进度值
  *  @param success     成功回调
  *  @param failure     失败回调
  */
-+ (void)GCDUploadImageArray:(NSArray *)imageArr WithToken:(NSString *)token qiniuPrefix:(NSString *)qiniuPrefix progress:(singleProgressHander)progress success:(void (^)(NSArray *imageUrlArr))success failure:(void (^)(NSString *status))failure;
++ (void)GCDUploadImageArray:(NSArray *)imageArr WithToken:(NSString *)token qiniuPrefix:(NSString *)qiniuPrefix progress:(singleProgressHander)progress allImageProgress:(ProgressHander)allprogress success:(void (^)(NSArray *imageUrlArr))success failure:(void (^)(NSString *status))failure;
 
 @end

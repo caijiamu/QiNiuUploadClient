@@ -85,19 +85,28 @@
     } success:weakmanagerHelper.singleSuccessBlock failure:weakmanagerHelper.singleFailBlcok];
 }
 
-+ (void)GCDUploadImageArray:(NSArray *)imageArr WithToken:(NSString *)token qiniuPrefix:(NSString *)qiniuPrefix progress:(singleProgressHander)progress success:(void (^)(NSArray *imageUrlArr))success failure:(void (^)(NSString *status))failure
++ (void)GCDUploadImageArray:(NSArray *)imageArr WithToken:(NSString *)token qiniuPrefix:(NSString *)qiniuPrefix progress:(singleProgressHander)progress allImageProgress:(ProgressHander)allprogress success:(void (^)(NSArray *imageUrlArr))success failure:(void (^)(NSString *status))failure
 {
+    NSMutableArray *imageUrl = @[].mutableCopy;
+    __block NSInteger currentLength = 0;
+    NSInteger totalLenth = [self summationFromImageArray:imageArr];
     // 获得全局并发queue
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     size_t count = imageArr.count;
-    NSMutableArray *imageUrl = @[].mutableCopy;
     dispatch_apply(count, queue, ^(size_t i) {
         NSLog(@"%@---%zu",[NSThread currentThread],i);
-        
         NSData *data = UIImageJPEGRepresentation(imageArr[i], 1);
         [self uploadData:data dataType:qiniuUploadDataImage WithToken:token qiniuPrefix:qiniuPrefix progress:^(NSString *key, float percent) {
             if (progress) {
                 progress(percent,i);
+            }
+            if (allprogress) {
+                NSData *data = UIImageJPEGRepresentation(imageArr[i], 1);
+                NSInteger presentLenth = currentLength + percent * [@(data.length) integerValue];
+                if (percent == 1) {
+                    currentLength = presentLenth;
+                }
+                allprogress(totalLenth,presentLenth,presentLenth/(float)totalLenth);
             }
         } success:^(NSString *url) {
             [imageUrl addObject:url];
@@ -116,6 +125,14 @@
             [self uploadData:data dataType:qiniuUploadDataImage WithToken:token qiniuPrefix:qiniuPrefix progress:^(NSString *key, float percent) {
                 if (progress) {
                     progress(percent,i);
+                }
+                if (allprogress) {
+                    NSData *data = UIImageJPEGRepresentation(imageArr[i], 1);
+                    NSInteger presentLenth = currentLength + percent * [@(data.length) integerValue];
+                    if (percent == 1) {
+                        currentLength = presentLenth;
+                    }
+                    allprogress(totalLenth,presentLenth,presentLenth/(float)totalLenth);
                 }
             } success:^(NSString *url) {
                 [imageUrl addObject:url];

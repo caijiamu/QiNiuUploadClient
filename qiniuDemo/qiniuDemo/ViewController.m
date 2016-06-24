@@ -36,10 +36,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     //异步测试
-    [self asyntest];
+//    [self asyntest];
     
     //同步测试
-    [self syncTest];
+//    [self syncTest];
 }
 -(void)asyntest
 {
@@ -109,16 +109,17 @@
 
 -(void)GCDUpMoreImage
 {
-    NSMutableArray *imageArr = @[[UIImage imageNamed:@"1"],[UIImage imageNamed:@"2"],[UIImage imageNamed:@"3"]].mutableCopy;
-   [JMQNUploadManagerClient GCDUploadImageArray:imageArr WithToken:_token qiniuPrefix:_qiniuPrefix progress:^(CGFloat percent, NSInteger i) {
-       NSLog(@"%f---%ld",percent,(long)i);
-       
+    NSMutableArray *imageArr = @[[UIImage imageNamed:@"1"],[UIImage imageNamed:@"2"],[UIImage imageNamed:@"3"],[UIImage imageNamed:@"1"],[UIImage imageNamed:@"2"],[UIImage imageNamed:@"3"]].mutableCopy;
+   [JMQNUploadManagerClient GCDUploadImageArray:imageArr WithToken:_token qiniuPrefix:[NSString stringWithFormat:@"%@/",_qiniuPrefix] progress:^(CGFloat percent, NSInteger i) {
+       NSLog(@"单张图片%f---%ld",percent,(long)i);
+   } allImageProgress:^(CGFloat maxProgress, CGFloat currentProgress, CGFloat precent) {
+       NSLog(@"所有图片%f",precent);
+       self.progressValue = precent;
+
    } success:^(NSArray *imageUrlArr) {
-       
-       NSLog(@"成功的url%@",imageUrlArr);
+       NSLog(@"成功%@",imageUrlArr);
    } failure:^(NSString *status) {
-       
-       NSLog(@"%@",status);
+       NSLog(@"失败%@",status);
    }];
 }
 
