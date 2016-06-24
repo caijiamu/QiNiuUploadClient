@@ -1,0 +1,8 @@
+platform :ios, "8.0"
+
+pod "Qiniu", "~> 7.0"
+pod "YYWebImage"
+
+target "qiniuDemo" do
+    
+end
